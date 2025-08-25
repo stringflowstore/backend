@@ -36,8 +36,8 @@ app.get('/auth/google',
 app.get('/auth/google/callback',
   passport.authenticate('google', { failureRedirect: '/minha-conta.html' }),
   (req, res) => {
-    // Autenticação bem-sucedida, redirecione para a página inicial
-    res.redirect('/');
+    // Autenticação bem-sucedida, redirecione para a página de perfil
+    res.redirect('/perfil.html');
   });
 
 // Rota para logout
@@ -48,8 +48,17 @@ app.get('/logout', (req, res) => {
     });
 });
 
-// Serve os arquivos estáticos da pasta 'client'
-app.use(express.static(path.join(__dirname, '..', 'website')));
+// Serve os arquivos estáticos da pasta 'WEBSITE'
+app.use(express.static(path.join(__dirname, '..', 'WEBSITE')));
+
+// Rota para a página de perfil
+app.get('/perfil.html', (req, res) => {
+    if (req.isAuthenticated()) {
+      res.sendFile(path.join(__dirname, '..', 'WEBSITE', 'perfil.html'));
+    } else {
+      res.redirect('/minha-conta.html');
+    }
+});
 
 // Rota para verificar se o usuário está logado e obter as informações de perfil
 app.get('/user', (req, res) => {
@@ -74,9 +83,9 @@ app.listen(port, (err) => {
 
 // A serialização e desserialização do usuário é necessária para a sessão do Passport
 passport.serializeUser((user, done) => {
-  done(null, user);
+    done(null, user);
 });
 
 passport.deserializeUser((user, done) => {
-  done(null, user);
+    done(null, user);
 });
