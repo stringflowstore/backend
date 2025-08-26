@@ -59,7 +59,8 @@ app.use(passport.session());
 passport.use(new GoogleStrategy({
     clientID: '874634983574-h6tooa1ekuh9ue16a5hjdri73csudgo4.apps.googleusercontent.com',
     clientSecret: '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',
-    callbackURL: "http://localhost:3000/auth/google/callback"
+    // ⚠️ ALTERADO: DEIXE A URL DO SEU RENDER AQUI ⚠️
+    callbackURL: "https://backend-fk1s.onrender.com/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
     try {
