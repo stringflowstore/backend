@@ -72,10 +72,8 @@ passport.use(new GoogleStrategy({
             }
             return done(null, user);
         } else {
-            // ✅ CORREÇÃO: Verificando se o e-mail e a foto existem antes de tentar acessá-los.
             const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
             const userPhoto = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null;
-
             const newRole = userEmail === 'stringflowstore@gmail.com' ? 'admin' : 'user';
             const newUser = new User({
                 googleId: profile.id,
@@ -108,7 +106,7 @@ passport.deserializeUser(async (id, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/minha-conta.html' }),
-    (req, res) => res.redirect('/minha-conta.html')
+    (req, res) => res.redirect('/perfil.html') // ⚠️ CORRIGIDO: Redireciona para o perfil
 );
 
 // ================= Rotas Login/Cadastro Local =================
