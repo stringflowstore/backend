@@ -11,6 +11,9 @@ const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 3000;
 
+// ⚠️ ADICIONADO: Diz ao Express para confiar no proxy do Render
+app.set('trust proxy', 1);
+
 // ================= Conexão com o MongoDB =================
 const MONGODB_URI = 'mongodb+srv://stringflowstore:meAHcnUTJMU31A0F@stringflowstore.x4vhijf.mongodb.net/?retryWrites=true&w=majority&appName=StringFlowStore';
 mongoose.connect(MONGODB_URI)
@@ -62,7 +65,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // ================= Middlewares de Autenticação =================
-// ⚠️ MOVIDO PARA CIMA, ANTES DE SEREM USADOS NAS ROTAS
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) return next();
     res.status(401).json({ error: 'Não autenticado' });
