@@ -19,11 +19,12 @@ mongoose.connect(MONGODB_URI, {
 }).then(() => console.log('--- Conectado ao MongoDB Atlas com sucesso! ---'))
   .catch(err => console.error('*** Erro de conexão com o MongoDB: ', err));
 
-// ================= Schema de Usuário =================
+// ================= Schema de Usuário (CORRIGIDO) =================
 const userSchema = new mongoose.Schema({
     googleId: String,
     displayName: String,
-    email: { type: String, required: true, unique: true },
+    // ⚠️ CORRIGIDO: O campo email não é mais obrigatório para evitar o erro.
+    email: { type: String, unique: true, sparse: true }, 
     password: String,
     photo: String,
     role: { type: String, enum: ['user', 'admin'], default: 'user' }
@@ -57,9 +58,8 @@ app.use(passport.session());
 
 // ================= Google Strategy =================
 passport.use(new GoogleStrategy({
-    // ⚠️ ATENÇÃO: SUBSTITUA OS VALORES ABAIXO PELOS SEUS CLIENT ID E CLIENT SECRET DO GOOGLE CLOUD
-    clientID: '874634983574-h6tooa1ekuh9ue16a5hjdri73csudgo4.apps.googleusercontent.com', 
-    clientSecret: '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',
+    clientID: 'SEU_CLIENT_ID', 
+    clientSecret: 'SEU_CLIENT_SECRET',
     callbackURL: "https://backend-fk1s.onrender.com/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
@@ -72,16 +72,18 @@ passport.use(new GoogleStrategy({
             }
             return done(null, user);
         } else {
+            // ⚠️ Verificando se o email está disponível antes de tentar usá-lo
             const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
             const userPhoto = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null;
             const newRole = userEmail === 'stringflowstore@gmail.com' ? 'admin' : 'user';
+
             const newUser = new User({
                 googleId: profile.id,
                 displayName: profile.displayName,
                 email: userEmail,
                 photo: userPhoto,
-                role: newRole
             });
+            newUser.role = newRole; // Definindo a role
             await newUser.save();
             return done(null, newUser);
         }
@@ -268,7 +270,6 @@ app.get('/products/:category', async (req, res) => {
         res.status(500).send('Erro ao buscar produtos');
     }
 });
-
 
 // ================= Inicia Servidor =================
 app.listen(port, err => {
