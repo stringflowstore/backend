@@ -19,11 +19,10 @@ mongoose.connect(MONGODB_URI, {
 }).then(() => console.log('--- Conectado ao MongoDB Atlas com sucesso! ---'))
   .catch(err => console.error('*** Erro de conexão com o MongoDB: ', err));
 
-// ================= Schema de Usuário (CORRIGIDO) =================
+// ================= Schema de Usuário =================
 const userSchema = new mongoose.Schema({
     googleId: String,
     displayName: String,
-    // ⚠️ CORRIGIDO: O campo email não é mais obrigatório para evitar o erro.
     email: { type: String, unique: true, sparse: true }, 
     password: String,
     photo: String,
@@ -72,7 +71,6 @@ passport.use(new GoogleStrategy({
             }
             return done(null, user);
         } else {
-            // ⚠️ Verificando se o email está disponível antes de tentar usá-lo
             const userEmail = profile.emails && profile.emails.length > 0 ? profile.emails[0].value : null;
             const userPhoto = profile.photos && profile.photos.length > 0 ? profile.photos[0].value : null;
             const newRole = userEmail === 'stringflowstore@gmail.com' ? 'admin' : 'user';
@@ -83,7 +81,7 @@ passport.use(new GoogleStrategy({
                 email: userEmail,
                 photo: userPhoto,
             });
-            newUser.role = newRole; // Definindo a role
+            newUser.role = newRole;
             await newUser.save();
             return done(null, newUser);
         }
@@ -108,6 +106,7 @@ passport.deserializeUser(async (id, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/minha-conta.html' }),
+    // ⚠️ CORRIGIDO: Redireciona para a página correta
     (req, res) => res.redirect('/minha-conta.html')
 );
 
@@ -175,6 +174,7 @@ function ensureAdmin(req, res, next) {
 }
 
 // ================= Rotas Protegidas =================
+// ⚠️ A rota /perfil.html foi removida, já que a página não existe mais
 app.get('/painel.html', ensureAdmin, (req, res) =>
     res.sendFile(path.join(__dirname, '..', 'WEBSITE', 'painel.html'))
 );
@@ -230,7 +230,6 @@ app.post('/admin/products', ensureAdmin, async (req, res) => {
         const newProduct = new Product({ name, price, stock, category, subcategory, description, photo });
         await newProduct.save();
 
-        // ✅ Retorna o produto criado em JSON para o frontend
         res.status(201).json(newProduct);
     } catch (err) {
         console.error(err);
@@ -262,7 +261,7 @@ app.delete('/admin/products/:id', ensureAdmin, async (req, res) => {
 // Rota pública para pegar produtos por categoria
 app.get('/products/:category', async (req, res) => {
     try {
-        const category = req.params.category; // 'Instrumentos' ou 'Acessórios'
+        const category = req.params.category;
         const products = await Product.find({ category }).sort({ createdAt: -1 });
         res.json(products);
     } catch (err) {
