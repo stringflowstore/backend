@@ -106,7 +106,6 @@ passport.deserializeUser(async (id, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/minha-conta.html' }),
-    // ⚠️ CORRIGIDO: Redireciona para a página correta
     (req, res) => res.redirect('/minha-conta.html')
 );
 
@@ -174,7 +173,11 @@ function ensureAdmin(req, res, next) {
 }
 
 // ================= Rotas Protegidas =================
-// ⚠️ A rota /perfil.html foi removida, já que a página não existe mais
+// ⚠️ CORRIGIDO: Adiciona a rota explícita para a página de minha-conta.
+app.get('/minha-conta.html', ensureAuthenticated, (req, res) =>
+    res.sendFile(path.join(__dirname, '..', 'WEBSITE', 'minha-conta.html'))
+);
+
 app.get('/painel.html', ensureAdmin, (req, res) =>
     res.sendFile(path.join(__dirname, '..', 'WEBSITE', 'painel.html'))
 );
