@@ -175,11 +175,11 @@ function ensureAdmin(req, res, next) {
 // ================= Rotas Protegidas =================
 // ⚠️ CORRIGIDO: Adiciona a rota explícita para a página de minha-conta.
 app.get('/minha-conta.html', ensureAuthenticated, (req, res) =>
-    res.sendFile(path.join(__dirname, '..', 'WEBSITE', 'minha-conta.html'))
+    res.sendFile(path.join(__dirname, '..', 'website', 'minha-conta.html'))
 );
 
 app.get('/painel.html', ensureAdmin, (req, res) =>
-    res.sendFile(path.join(__dirname, '..', 'WEBSITE', 'painel.html'))
+    res.sendFile(path.join(__dirname, '..', 'website', 'painel.html'))
 );
 
 // ================= Status do Usuário =================
@@ -197,8 +197,8 @@ app.get('/user-status', (req, res) => {
 });
 
 // ================= Servidor Estático =================
-app.use(express.static(path.join(__dirname, '..', 'WEBSITE')));
-app.use('/images', express.static(path.join(__dirname, '..', 'WEBSITE', 'images')));
+app.use(express.static(path.join(__dirname, '..', 'website')));
+app.use('/images', express.static(path.join(__dirname, '..', 'website', 'images')));
 
 // ================= Rotas Admin =================
 app.get('/admin/users', ensureAdmin, async (req, res) => {
