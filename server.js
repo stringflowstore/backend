@@ -58,8 +58,8 @@ app.use(passport.session());
 
 // ================= Google Strategy =================
 passport.use(new GoogleStrategy({
-    clientID: 'SEU_CLIENT_ID', 
-    clientSecret: 'SEU_CLIENT_SECRET',
+    clientID: '874634983574-h6tooa1ekuh9ue16a5hjdri73csudgo4.apps.googleusercontent.com', 
+    clientSecret: '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',
     callbackURL: "https://backend-fk1s.onrender.com/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
