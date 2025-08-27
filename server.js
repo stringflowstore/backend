@@ -250,15 +250,33 @@ app.get('/products/:category', async (req, res) => {
     }
 });
 
-// ================= Middlewares de autenticação =================
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) return next();
-    res.status(401).json({ error: 'Não autenticado' });
-}
-function ensureAdmin(req, res, next) {
-    if (req.isAuthenticated() && req.user.role === 'admin') return next();
-    res.status(403).json({ error: 'Acesso negado' });
-}
+// ... (código anterior)
+
+// ================= Middlewares =================
+// ⚠️ Habilita CORS para permitir que seu frontend se comunique com este backend
+app.use(cors({
+    origin: 'https://stringflowstore.github.io', // ⚠️ A URL completa do seu GitHub Pages
+    credentials: true
+}));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// ⚠️ CORRIGIDO: Configuração de sessão para permitir cookies de terceiros
+app.use(session({
+    secret: process.env.SESSION_SECRET || 'sua-chave-secreta-para-sessao',
+    resave: false,
+    saveUninitialized: false, // Alterado para false
+    cookie: { 
+        secure: true, // ESSENCIAL: Garante que o cookie só é enviado via HTTPS
+        httpOnly: true, // Boa prática de segurança
+        sameSite: 'none', // ESSENCIAL: Permite que o cookie seja enviado em requisições de outros sites
+        maxAge: 1000 * 60 * 60 * 24 // 24 horas
+    }
+}));
+app.use(passport.initialize());
+app.use(passport.session());
+
+// ... (resto do seu código)
 
 // ================= Inicia Servidor =================
 app.listen(port, err => {
