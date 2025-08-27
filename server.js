@@ -108,7 +108,7 @@ passport.deserializeUser(async (id, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/minha-conta.html' }),
-    (req, res) => res.redirect('/perfil.html')
+    (req, res) => res.redirect('/minha-conta.html')
 );
 
 // ================= Rotas Login/Cadastro Local =================
