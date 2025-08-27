@@ -57,9 +57,9 @@ app.use(passport.session());
 
 // ================= Google Strategy =================
 passport.use(new GoogleStrategy({
-    clientID: '874634983574-h6tooa1ekuh9ue16a5hjdri73csudgo4.apps.googleusercontent.com',
+    // ⚠️ ATENÇÃO: SUBSTITUA OS VALORES ABAIXO PELOS SEUS CLIENT ID E CLIENT SECRET DO GOOGLE CLOUD
+    clientID: '874634983574-h6tooa1ekuh9ue16a5hjdri73csudgo4.apps.googleusercontent.com', 
     clientSecret: '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',
-    // ⚠️ ALTERADO: DEIXE A URL DO SEU RENDER AQUI ⚠️
     callbackURL: "https://backend-fk1s.onrender.com/auth/google/callback"
   },
   async (accessToken, refreshToken, profile, done) => {
@@ -106,7 +106,7 @@ passport.deserializeUser(async (id, done) => {
 app.get('/auth/google', passport.authenticate('google', { scope: ['profile', 'email'] }));
 app.get('/auth/google/callback', 
     passport.authenticate('google', { failureRedirect: '/minha-conta.html' }),
-    (req, res) => res.redirect('/perfil.html') // ⚠️ CORRIGIDO: Redireciona para o perfil
+    (req, res) => res.redirect('/perfil.html')
 );
 
 // ================= Rotas Login/Cadastro Local =================
